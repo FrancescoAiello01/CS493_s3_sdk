@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QComboBox, QGridLayout, QLabel, QPushButton, QWidget, QLineEdit
+from PyQt5.QtWidgets import QComboBox, QFileDialog, QGridLayout, QLabel, QMessageBox, QPushButton, QWidget, QLineEdit
 from models.s3_connector import S3Connector
+import os
 
 
 class MusicScreen(QWidget):
@@ -13,6 +14,50 @@ class MusicScreen(QWidget):
     def init_ui(self):
         self.create_aws_profile_specification()
         self.create_bucket_dropdown()
+        self.create_single_file_upload()
+        
+        
+    def create_single_file_upload(self):
+        select_file_label = QLabel("Select a file for upload")
+        self.input_file_field = QLineEdit()
+        self.select_file_button = QPushButton("...")
+        self.select_file_button.clicked.connect(self.select_file_listener)
+        
+        self.upload_file_button = QPushButton("upload to s3")
+        self.upload_file_button.clicked.connect(self.upload_file_listener)
+        
+        aws_file_name_label = QLabel("Rename file (if desired)")
+        self.aws_file_name = QLineEdit()
+        
+        self.grid_layout.addWidget(select_file_label, 2, 0)
+        self.grid_layout.addWidget(self.input_file_field, 2, 1)
+        self.grid_layout.addWidget(self.select_file_button, 2, 2)
+        
+        self.grid_layout.addWidget(aws_file_name_label, 3, 1)
+        self.grid_layout.addWidget(self.aws_file_name, 3, 2)
+        self.grid_layout.addWidget(self.upload_file_button, 3, 3)
+        
+    def upload_file_listener(self):
+        path = self.input_file_field.text()
+        file_name = self.aws_file_name.text()
+        bucket = str(self.bucket_dropdown.currentText())
+        self.s3_connector.upload_file(
+            file_path=path, file_name=file_name, bucket_name=bucket)
+        self.success_message_box("Upload Confirmation", 'Successfully uploaded to S3!')
+        
+    def success_message_box(self, title, message):
+        self.status_message_box = QMessageBox()
+        self.status_message_box.setIcon(QMessageBox.Information)
+        self.status_message_box.setText(message)
+        self.status_message_box.setWindowTitle(title)
+        self.status_message_box.setStandardButtons(QMessageBox.Ok)
+        self.status_message_box.show()
+        
+    def select_file_listener(self):
+        filename, filter = QFileDialog.getOpenFileName(parent=self, caption='Open file')
+        if filename:
+            self.input_file_field.setText(filename)
+            self.aws_file_name.setText(os.path.basename(filename))
 
     def create_bucket_dropdown(self):
         bucket_label = QLabel("S3 Bucket")
