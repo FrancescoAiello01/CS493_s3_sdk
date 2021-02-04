@@ -14,8 +14,7 @@ class S3Connector:
         for bucket in self.s3.buckets.all():
             return bucket.name
             
-    def get_bucket(self, bucket_name):
-        bucket = self.s3.Bucket(bucket_name)
-        for bucket_object in bucket.objects.all():
-            return bucket_object
+    def list_bucket_content(self, bucket_name, directory=''):
+        s3_bucket = self.s3.Bucket(bucket_name)
+        return [f.key.split(directory + "/")[0] for f in s3_bucket.objects.filter(Prefix=directory).all()]
             

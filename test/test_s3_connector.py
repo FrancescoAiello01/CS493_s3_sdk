@@ -47,9 +47,9 @@ class TestS3Connector(unittest.TestCase):
             
     
     @mock_s3
-    def test_print_buckets(self):
+    def test_get_buckets(self):
         """
-        An S3 Connector should successfully print s3 buckets
+        An S3 Connector should successfully get s3 bucket names
         """
         conn = boto3.resource('s3', region_name='us-east-1')
         # We need to create the bucket since this is all in Moto's 'virtual' AWS account
@@ -58,3 +58,23 @@ class TestS3Connector(unittest.TestCase):
         s3_connector = S3Connector()
         s3_connector.connect("default")
         self.assertEqual(s3_connector.get_buckets(), "foobucket")
+        
+        
+    @mock_s3
+    def test_list_bucket_content(self):
+        """
+        An S3 Connector should successfully list s3 bucket contents
+        """
+        conn = boto3.resource('s3', region_name='us-east-1')
+        # We need to create the bucket since this is all in Moto's 'virtual' AWS account
+        conn.create_bucket(Bucket='foobucket')
+        # Upload fake file to bucket
+        s3 = boto3.client('s3')
+        with open('test/test_resources/test_file', 'rb') as data:
+            s3.upload_fileobj(data, 'foobucket', 'foofile')
+        
+        s3_connector = S3Connector()
+        s3_connector.connect("default")
+        self.assertEqual(s3_connector.list_bucket_content("foobucket"), ["foofile"])
+        
+        
