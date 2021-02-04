@@ -85,17 +85,18 @@ class TestS3Connector(unittest.TestCase):
         conn = boto3.resource('s3', region_name='us-east-1')
         # We need to create the bucket since this is all in Moto's 'virtual' AWS account
         conn.create_bucket(Bucket='foobucket')
-        
+
         s3_connector = S3Connector()
         s3_connector.connect("default")
-        s3_connector.upload_file(file_path="test/test_resources/test_file", file_name="foofile", bucket_name="foobucket")
-        
+        s3_connector.upload_file(
+            file_path="test/test_resources/test_file", file_name="foofile", bucket_name="foobucket")
+
         # get bucket contents
         response = boto3.client('s3').list_objects(Bucket="foobucket")
         contents = []
         for content in response.get('Contents', []):
             contents.append(content.get('Key'))
-            
+
         self.assertEqual(contents, ["foofile"])
 
     @mock_s3
@@ -106,15 +107,40 @@ class TestS3Connector(unittest.TestCase):
         conn = boto3.resource('s3', region_name='us-east-1')
         # We need to create the bucket since this is all in Moto's 'virtual' AWS account
         conn.create_bucket(Bucket='foobucket')
-        
+
         s3_connector = S3Connector()
         s3_connector.connect("default")
-        s3_connector.upload_directory(directory_path="test/test_resources/test_directory", bucket_name="foobucket", aws_directory="test_directory")
-        
+        s3_connector.upload_directory(directory_path="test/test_resources/test_directory",
+                                      bucket_name="foobucket", aws_directory="test_directory")
+
         # get bucket contents
         response = boto3.client('s3').list_objects(Bucket="foobucket")
         contents = []
         for content in response.get('Contents', []):
             contents.append(content.get('Key'))
-        
-        self.assertEqual(contents, ["test_directory/test_file", "test_directory/test_file2"])
+
+        self.assertEqual(
+            contents, ["test_directory/test_file", "test_directory/test_file2"])
+
+    @mock_s3
+    def test_upload_directory_of_directories_to_s3_bucket(self):
+        """
+        An S3 Connector should successfully upload a directory of directories with files to a specified bucket
+        """
+        conn = boto3.resource('s3', region_name='us-east-1')
+        # We need to create the bucket since this is all in Moto's 'virtual' AWS account
+        conn.create_bucket(Bucket='foobucket')
+
+        s3_connector = S3Connector()
+        s3_connector.connect("default")
+        s3_connector.upload_directory(directory_path="test/test_resources/test_subdirectory",
+                                      bucket_name="foobucket", aws_directory="test_directory")
+
+        # get bucket contents
+        response = boto3.client('s3').list_objects(Bucket="foobucket")
+        contents = []
+        for content in response.get('Contents', []):
+            contents.append(content.get('Key'))
+
+        self.assertEqual(
+            contents, ["test_directory/sub/fake", "test_directory/sub2/fake"])
