@@ -46,3 +46,15 @@ class TestS3Connector(unittest.TestCase):
             self.fail("Could not connect to aws using mock aws s3")
             
     
+    @mock_s3
+    def test_print_buckets(self):
+        """
+        An S3 Connector should successfully print s3 buckets
+        """
+        conn = boto3.resource('s3', region_name='us-east-1')
+        # We need to create the bucket since this is all in Moto's 'virtual' AWS account
+        conn.create_bucket(Bucket='foobucket')
+        
+        s3_connector = S3Connector()
+        s3_connector.connect("default")
+        self.assertEqual(s3_connector.get_buckets(), "foobucket")

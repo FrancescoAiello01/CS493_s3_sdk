@@ -10,12 +10,12 @@ class S3Connector:
         self.session = boto3.session.Session(profile_name=aws_profile)
         self.s3 = self.session.resource('s3')
         
-    def print_buckets(self):
+    def get_buckets(self):
         for bucket in self.s3.buckets.all():
-            print(bucket.name)
+            return bucket.name
             
-    def print_bucket(self, bucket_name):
+    def get_bucket(self, bucket_name):
         bucket = self.s3.Bucket(bucket_name)
         for bucket_object in bucket.objects.all():
-            print(bucket_object)
+            return bucket_object
             
