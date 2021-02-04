@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow
-from views.music_screen import MusicScreen
+from views.music_screen.music_screen import MusicScreen
 
 
 class MainScreen(QMainWindow):
