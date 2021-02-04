@@ -57,7 +57,7 @@ class TestS3Connector(unittest.TestCase):
 
         s3_connector = S3Connector()
         s3_connector.connect("default")
-        self.assertEqual(s3_connector.get_buckets(), "foobucket")
+        self.assertEqual(s3_connector.get_buckets(), ["foobucket"])
 
     @mock_s3
     def test_list_bucket_content(self):

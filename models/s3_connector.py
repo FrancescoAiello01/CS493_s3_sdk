@@ -14,8 +14,10 @@ class S3Connector:
         self.s3_client = self.session.client('s3')
 
     def get_buckets(self):
+        buckets = []
         for bucket in self.s3_resource.buckets.all():
-            return bucket.name
+            buckets.append(bucket.name)
+        return buckets
 
     def list_bucket_content(self, bucket_name, directory=''):
         response = self.s3_client.list_objects(Bucket="foobucket", Prefix="")

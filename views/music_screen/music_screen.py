@@ -27,7 +27,8 @@ class MusicScreen(QWidget):
   
 
     def populate_bucket_dropdown(self):
-        print("hi")
+        buckets = self.s3_connector.get_buckets()
+        self.bucket_dropdown.addItems(buckets)
     
     def create_aws_profile_specification(self):
         aws_profile_label = QLabel("AWS Profile (leave blank for default)")
