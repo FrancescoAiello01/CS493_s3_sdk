@@ -14,3 +14,8 @@ class S3Connector:
         for bucket in self.s3.buckets.all():
             print(bucket.name)
             
+    def print_bucket(self, bucket_name):
+        bucket = self.s3.Bucket(bucket_name)
+        for bucket_object in bucket.objects.all():
+            print(bucket_object)
+            
