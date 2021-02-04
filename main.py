@@ -1,6 +1,5 @@
-import boto3
+from s3_connector import S3Connector
 
-session = boto3.session.Session(profile_name='s3')
-s3 = session.resource('s3')
-for bucket in s3.buckets.all():
-    print(bucket.name)
+s3_connector = S3Connector()
+s3_connector.connect('s3')
+s3_connector.print_buckets()
