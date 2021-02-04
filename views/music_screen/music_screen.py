@@ -1,5 +1,6 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QComboBox, QGridLayout, QLabel, QPushButton, QWidget, QLineEdit
+from models.s3_connector import S3Connector
 
 
 class MusicScreen(QWidget):
@@ -7,6 +8,7 @@ class MusicScreen(QWidget):
         super().__init__()
         self.grid_layout = QGridLayout(self)
         self.init_ui()
+        self.s3_connector = S3Connector()
 
     def init_ui(self):
         self.create_aws_profile_specification()
@@ -30,6 +32,16 @@ class MusicScreen(QWidget):
     def create_aws_profile_specification(self):
         aws_profile_label = QLabel("AWS Profile (leave blank for default)")
         self.aws_profile = QLineEdit()
+        save_button = QPushButton("Save")
+        save_button.clicked.connect(self.update_aws_profile)
+        
         self.grid_layout.addWidget(aws_profile_label, 0, 0)
         self.grid_layout.addWidget(self.aws_profile, 0, 1)
+        self.grid_layout.addWidget(save_button, 0, 2)
+        
+    def update_aws_profile(self):
+        if self.aws_profile.text():
+            self.s3_connector.connect(self.aws_profile.text())
+        else:
+            self.s3_connector.connect('default')
         
