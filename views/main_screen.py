@@ -8,10 +8,11 @@ class MainScreen(QMainWindow):
         self.init_ui()
 
     def init_ui(self):
-        width = 500
-        height = 500
+        width = 800
+        height = 400
         self.setFixedWidth(width)
         self.setFixedHeight(height)
+        self.setWindowTitle("AWS Uploader")
 
         self.music_screen = MusicScreen()
         self.setCentralWidget(self.music_screen)

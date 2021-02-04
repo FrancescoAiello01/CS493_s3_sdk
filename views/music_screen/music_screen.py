@@ -12,8 +12,8 @@ class MusicScreen(QWidget):
         self.s3_connector = S3Connector()
 
     def init_ui(self):
-        self.create_aws_profile_specification()
         self.create_bucket_dropdown()
+        self.create_aws_profile_specification()
         self.create_single_file_upload()
         self.create_directory_file_upload()
         
@@ -114,7 +114,7 @@ class MusicScreen(QWidget):
     def create_aws_profile_specification(self):
         aws_profile_label = QLabel("AWS Profile (leave blank for default)")
         self.aws_profile = QLineEdit()
-        save_button = QPushButton("Save")
+        save_button = QPushButton("Set")
         save_button.clicked.connect(self.update_aws_profile)
         
         self.grid_layout.addWidget(aws_profile_label, 0, 0)
@@ -126,4 +126,5 @@ class MusicScreen(QWidget):
             self.s3_connector.connect(self.aws_profile.text())
         else:
             self.s3_connector.connect('default')
+        self.populate_bucket_dropdown()
         
