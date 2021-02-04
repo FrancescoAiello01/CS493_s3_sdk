@@ -109,6 +109,7 @@ class MusicScreen(QWidget):
 
     def populate_bucket_dropdown(self):
         buckets = self.s3_connector.get_buckets()
+        self.bucket_dropdown.clear()
         self.bucket_dropdown.addItems(buckets)
     
     def create_aws_profile_specification(self):
