@@ -1,7 +1,7 @@
 import unittest
 from models.s3_connector import S3Connector
 
-class TestBinarySearchTree(unittest.TestCase):
+class TestS3Connector(unittest.TestCase):
     """
     Initialization
     """
