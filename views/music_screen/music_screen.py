@@ -15,6 +15,42 @@ class MusicScreen(QWidget):
         self.create_aws_profile_specification()
         self.create_bucket_dropdown()
         self.create_single_file_upload()
+        self.create_directory_file_upload()
+        
+        
+    def create_directory_file_upload(self):
+        select_directory_label = QLabel("Select a directory for upload")
+        self.input_directory_field = QLineEdit()
+        self.select_directory_button = QPushButton("...")
+        self.select_directory_button.clicked.connect(self.select_directory_listener)
+        
+        self.upload_directory_button = QPushButton("upload to s3")
+        self.upload_directory_button.clicked.connect(self.upload_directory_listener)
+        
+        aws_directory_name_label = QLabel("Rename directory (if desired)")
+        self.aws_directory_name = QLineEdit()
+        
+        self.grid_layout.addWidget(select_directory_label, 4, 0)
+        self.grid_layout.addWidget(self.input_directory_field, 4, 1)
+        self.grid_layout.addWidget(self.select_directory_button, 4, 2)
+        
+        self.grid_layout.addWidget(aws_directory_name_label, 5, 1)
+        self.grid_layout.addWidget(self.aws_directory_name, 5, 2)
+        self.grid_layout.addWidget(self.upload_directory_button, 5, 3)
+        
+    def select_directory_listener(self):
+        directory_name = QFileDialog.getExistingDirectory(parent=self, caption='Select directory')
+        if directory_name:
+            self.input_directory_field.setText(directory_name)
+            self.aws_directory_name.setText(os.path.basename(directory_name))
+            
+    def upload_directory_listener(self):
+        path = self.input_directory_field.text()
+        directory_name = self.aws_directory_name.text()
+        bucket = str(self.bucket_dropdown.currentText())
+        self.s3_connector.upload_directory(directory_path=path,
+                                      bucket_name=bucket, aws_directory=directory_name)
+        self.success_message_box("Upload Confirmation", 'Successfully uploaded to S3!')
         
         
     def create_single_file_upload(self):
