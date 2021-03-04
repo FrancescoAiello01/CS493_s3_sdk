@@ -8,6 +8,7 @@ class MusicScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.grid_layout = QGridLayout(self)
+        self.s3_elements = []
         self.init_ui()
         self.s3_connector = S3Connector()
 
@@ -55,7 +56,7 @@ class MusicScreen(QWidget):
         
         
     def create_single_file_upload(self):
-        select_file_label = QLabel("Select a file for upload")
+        self.select_file_label = QLabel("Select a file for upload")
         self.input_file_field = QLineEdit()
         self.select_file_button = QPushButton("...")
         self.select_file_button.clicked.connect(self.select_file_listener)
@@ -63,14 +64,16 @@ class MusicScreen(QWidget):
         self.upload_file_button = QPushButton("upload to s3")
         self.upload_file_button.clicked.connect(self.upload_file_listener)
         
-        aws_file_name_label = QLabel("Rename file (if desired)")
+        self.aws_file_name_label = QLabel("Rename file (if desired)")
         self.aws_file_name = QLineEdit()
+        self.s3_elements.extend((self.input_file_field, self.select_file_button, self.upload_file_button, self.aws_file_name, self.aws_file_name_label, self.select_file_label))
         
-        self.grid_layout.addWidget(select_file_label, 2, 0)
+        
+        self.grid_layout.addWidget(self.select_file_label, 2, 0)
         self.grid_layout.addWidget(self.input_file_field, 2, 1)
         self.grid_layout.addWidget(self.select_file_button, 2, 2)
         
-        self.grid_layout.addWidget(aws_file_name_label, 3, 1)
+        self.grid_layout.addWidget(self.aws_file_name_label, 3, 1)
         self.grid_layout.addWidget(self.aws_file_name, 3, 2)
         self.grid_layout.addWidget(self.upload_file_button, 3, 3)
         
@@ -114,8 +117,17 @@ class MusicScreen(QWidget):
         self.bucket_dropdown.addItems(buckets)
         
     def create_dynamodb_checkbox(self):
-        self.dynamo_db_checkbox = QCheckBox("Create dynamoDB entry?")
+        self.dynamo_db_checkbox = QCheckBox("Create dynamoDB entry")
+        self.dynamo_db_checkbox.stateChanged.connect(self.dynamodb_ui_updater)
         self.grid_layout.addWidget(self.dynamo_db_checkbox, 0, 3)
+        
+    def dynamodb_ui_updater(self):
+        if (self.dynamo_db_checkbox.isChecked()):
+            for widget in self.s3_elements:
+                widget.hide()
+        else:
+            for widget in self.s3_elements:
+                widget.show()
     
     def create_aws_profile_specification(self):
         aws_profile_label = QLabel("AWS Profile (leave blank for default)")
