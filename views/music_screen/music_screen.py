@@ -63,7 +63,7 @@ class MusicScreen(QWidget):
         self.s3_connector.upload_directory(directory_path=path,
                                       bucket_name=bucket, aws_directory=directory_name)
         if (self.dynamo_db_checkbox.isChecked()):
-            self.dynamo_db_connector.add_entry(s3_key=directory_name, genre=self.genre_text_box.text())
+            self.dynamo_db_connector.add_entry(directory_path=path, directory_name=directory_name, genre=self.genre_text_box.text())
         self.success_message_box("Upload Confirmation", 'Successfully uploaded to S3!')
         
         
