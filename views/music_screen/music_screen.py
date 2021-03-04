@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QComboBox, QFileDialog, QGridLayout, QLabel, QMessageBox, QPushButton, QWidget, QLineEdit
+from PyQt5.QtWidgets import QCheckBox, QComboBox, QFileDialog, QGridLayout, QLabel, QMessageBox, QPushButton, QWidget, QLineEdit
 from models.s3_connector import S3Connector
 import os
 
@@ -16,6 +16,7 @@ class MusicScreen(QWidget):
         self.create_aws_profile_specification()
         self.create_single_file_upload()
         self.create_directory_file_upload()
+        self.create_dynamodb_checkbox()
         
         
     def create_directory_file_upload(self):
@@ -111,6 +112,10 @@ class MusicScreen(QWidget):
         buckets = self.s3_connector.get_buckets()
         self.bucket_dropdown.clear()
         self.bucket_dropdown.addItems(buckets)
+        
+    def create_dynamodb_checkbox(self):
+        self.dynamo_db_checkbox = QCheckBox("Create dynamoDB entry?")
+        self.grid_layout.addWidget(self.dynamo_db_checkbox, 0, 3)
     
     def create_aws_profile_specification(self):
         aws_profile_label = QLabel("AWS Profile (leave blank for default)")
