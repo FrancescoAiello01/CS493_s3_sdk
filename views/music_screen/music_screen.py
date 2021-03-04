@@ -1,3 +1,4 @@
+from models.dynamo_db_connector import DynamoDBConnector
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QCheckBox, QComboBox, QFileDialog, QGridLayout, QLabel, QMessageBox, QPushButton, QWidget, QLineEdit
 from models.s3_connector import S3Connector
@@ -11,6 +12,7 @@ class MusicScreen(QWidget):
         self.s3_elements = []
         self.init_ui()
         self.s3_connector = S3Connector()
+        self.dynamo_db_connector = DynamoDBConnector()
 
     def init_ui(self):
         self.create_bucket_dropdown()
@@ -18,7 +20,15 @@ class MusicScreen(QWidget):
         self.create_single_file_upload()
         self.create_directory_file_upload()
         self.create_dynamodb_checkbox()
+        self.create_genre_selection()
         
+    def create_genre_selection(self):
+        self.genre_label = QLabel('genre')
+        self.genre_text_box = QLineEdit()
+        self.grid_layout.addWidget(self.genre_label, 0, 4)
+        self.grid_layout.addWidget(self.genre_text_box, 0, 5)
+        self.genre_label.hide()
+        self.genre_text_box.hide()
         
     def create_directory_file_upload(self):
         select_directory_label = QLabel("Select a directory for upload")
@@ -52,6 +62,8 @@ class MusicScreen(QWidget):
         bucket = str(self.bucket_dropdown.currentText())
         self.s3_connector.upload_directory(directory_path=path,
                                       bucket_name=bucket, aws_directory=directory_name)
+        if (self.dynamo_db_checkbox.isChecked()):
+            self.dynamo_db_connector.add_entry(s3_key=directory_name, genre=self.genre_text_box.text())
         self.success_message_box("Upload Confirmation", 'Successfully uploaded to S3!')
         
         
@@ -125,9 +137,13 @@ class MusicScreen(QWidget):
         if (self.dynamo_db_checkbox.isChecked()):
             for widget in self.s3_elements:
                 widget.hide()
+            self.genre_label.show()
+            self.genre_text_box.show()
         else:
             for widget in self.s3_elements:
                 widget.show()
+            self.genre_label.hide()
+            self.genre_text_box.hide()
     
     def create_aws_profile_specification(self):
         aws_profile_label = QLabel("AWS Profile (leave blank for default)")
