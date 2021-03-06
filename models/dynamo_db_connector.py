@@ -25,6 +25,8 @@ class DynamoDBConnector:
             self.batch_write(genre, split_key[0], split_key[1], split_key[2], key)
         
     def batch_write(self, genre, artist, album, song, s3_key):
+        split_song = song.split('.')
+        song = split_song[0]
         self.ddb_client.batch_write_item(
             RequestItems={
                 'music': [
@@ -56,6 +58,27 @@ class DynamoDBConnector:
                                         'type': { 'S': "song" },
                                         'name': { 'S': song },
                                         's3_key': { 'S': s3_key }
+                                    },
+                                },
+                            },
+                            {
+                                'PutRequest': {
+                                    'Item': {
+                                        'pk': { 'S': f'song#{song}' },
+                                        'sk': { 'S': f'artist#{artist}' },
+                                        'type': { 'S': "song" },
+                                        'name': { 'S': song },
+                                        's3_key': { 'S': s3_key }
+                                    },
+                                },
+                            },
+                            {
+                                'PutRequest': {
+                                    'Item': {
+                                        'pk': { 'S': 'genre' },
+                                        'sk': { 'S': f'{genre}' },
+                                        'type': { 'S': "genre" },
+                                        'name': { 'S': genre },
                                     },
                                 },
                             },  
